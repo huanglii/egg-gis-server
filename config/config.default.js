@@ -20,7 +20,7 @@ module.exports = appInfo => {
 
   // cors
   config.security = {
-    domainWhiteList: [ 'http://localhost:53788' ],
+    domainWhiteList: [ 'http://localhost:8080' ],
   };
   config.cors = {
     origin: '*',

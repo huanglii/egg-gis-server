@@ -12,32 +12,24 @@ class PoiService extends Service {
     const pois = await this.ctx.model.Poi.findAll();
     return pois;
   }
-  async findByBBox(bbox) {
+  async findByBBox(tableName, layerName, bbox) {
     const sql = `
-      select row_to_json(fc) geom
-      from (
-          select
-              'FeatureCollection' as "type",
-              array_to_json(array_agg(f)) as "features"
-          from (
-              select
-                  'Feature' as "type",
-                  ST_AsGeoJSON(geom, 6) :: json as "geometry",
-                  (
-                      select json_strip_nulls(row_to_json(t))
-                      from (
-                          select id, name, lng, lat
-                      ) t
-                  ) as "properties"
-              from point
-              where geom && ST_MakeBox2D(ST_Point(${bbox[0]}, ${bbox[1]}),ST_Point(${bbox[2]}, ${bbox[3]}))
-          ) as f
-      ) as fc;
-    `;
+    SELECT
+      ST_AsMVT(tile, '${layerName}', 4096, 'geom') AS tiles
+    FROM
+      (
+      SELECT
+        t.gid,
+        ST_AsMVTGeom(t.geom, ST_MakeEnvelope(${bbox[0]}, ${bbox[1]}, ${bbox[2]}, ${bbox[3]}, 3857), 4096) AS geom 
+      FROM
+      (
+        SELECT ST_Transform( geom, 3857) geom, gid FROM ${tableName}) t 
+      ) tile
+    `
     const result = await this.ctx.model.query(sql, {
       type: 'SELECT',
     });
-    return result[0].geom;
+    return result[0].tiles;
   }
 }
 

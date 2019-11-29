@@ -7,5 +7,5 @@ module.exports = app => {
   const { router, controller } = app;
 
   router.get('/mvt', controller.mvt.index);
-  router.get('/mvt/poi/:z/:x/:y.pbf', controller.mvt.poi);
+  router.get('/mvt/:layer/:z/:x/:y.pbf', controller.mvt.poi);
 };

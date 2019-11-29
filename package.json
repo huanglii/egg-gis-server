@@ -12,7 +12,6 @@
     "egg-cors": "^2.2.3",
     "egg-scripts": "^2.11.0",
     "egg-sequelize": "^5.2.0",
-    "mapnik": "^3.6.2",
     "pbf": "^3.2.1",
     "pg": "^7.14.0",
     "pg-hstore": "^2.3.3"

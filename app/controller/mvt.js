@@ -1,9 +1,9 @@
 'use strict';
 
 const SphericalMercator = require('@mapbox/sphericalmercator');
-const mapnik = require('mapnik');
-const path = require('path');
-mapnik.registerDatasource(path.join(mapnik.settings.paths.input_plugins, 'geojson.input'));
+// const mapnik = require('mapnik');
+// const path = require('path');
+// mapnik.registerDatasource(path.join(mapnik.settings.paths.input_plugins, 'geojson.input'));
 
 const Controller = require('egg').Controller;
 
@@ -17,35 +17,17 @@ class MvtController extends Controller {
     const z = parseInt(ctx.params.z);
     const x = parseInt(ctx.params.x);
     const y = parseInt(ctx.params.y);
+    const layerName = ctx.params.layer;
     ctx.logger.info(`tile: ${z}, ${x}, ${y}`);
 
     const merc = new SphericalMercator({
       size: 256,
     });
 
-    const bbox = merc.bbox(x, y, z);
+    const bbox = merc.bbox(x, y, z, false, '900913');
     ctx.logger.info(`bbox: ${bbox}`);
-    const geojsonData = await this.ctx.service.poi.findByBBox(bbox);
-    if (geojsonData.features) {
-      const map = new mapnik.Map(256, 256, '+init=epsg:3857');
-      const vt = new mapnik.VectorTile(z, x, y);
-
-      vt.addGeoJSON(JSON.stringify(geojsonData), 'point');
-      const data = await renderVectorTile(map, vt);
-      ctx.set('Content-Type', 'application/x-protobuf');
-      ctx.body = data;
-    } else {
-      ctx.body = null;
-    }
-
-    function renderVectorTile(map, vectorTile) {
-      return new Promise((resolve, reject) => {
-        map.render(vectorTile, {}, (error, tile) => {
-          if (error) reject(error);
-          resolve(tile.getData());
-        });
-      });
-    }
+    const data = await this.ctx.service.poi.findByBBox(layerName, layerName, bbox);
+    ctx.body = data
   }
 }
 
