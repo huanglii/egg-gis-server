@@ -1,6 +1,6 @@
 'use strict';
 
-// app/service/user.js
+// app/service/mvt.js
 const Service = require('egg').Service;
 
 class MVTService extends Service {
@@ -17,10 +17,10 @@ class MVTService extends Service {
       (
         SELECT ST_Transform(geom, 3857) geom, gid FROM ${tableName}) t
       ) tile
-    `
+    `;
     const result = await this.ctx.model.query(sql, {
       // replacements: [layerName, bbox[0], bbox[1], bbox[2], bbox[3]],
-      bind: [layerName, bbox[0], bbox[1], bbox[2], bbox[3]],
+      bind: [ layerName, bbox[0], bbox[1], bbox[2], bbox[3] ],
       type: this.app.Sequelize.QueryTypes.SELECT,
     });
     return result[0].tiles;

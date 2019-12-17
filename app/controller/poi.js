@@ -11,7 +11,13 @@ class PoiController extends Controller {
     };
   }
   async info() {
-    const poi = await this.ctx.service.poi.findById(this.ctx.params.id);
+    const id = this.ctx.params.id;
+    let poi = await this.ctx.service.cache.get(`poi_info_${id}`);
+    if (!poi) {
+      poi = await this.ctx.service.poi.findById(id);
+      await this.ctx.service.cache.set(`poi_info_${id}`, poi);
+    }
+    this.ctx.logger.info('poi_info: %j', poi);
     this.ctx.body = {
       success: true,
       data: poi,

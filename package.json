@@ -10,6 +10,7 @@
     "@mapbox/sphericalmercator": "^1.1.0",
     "egg": "^2.15.1",
     "egg-cors": "^2.2.3",
+    "egg-redis": "^2.4.0",
     "egg-scripts": "^2.11.0",
     "egg-sequelize": "^5.2.0",
     "pbf": "^3.2.1",
